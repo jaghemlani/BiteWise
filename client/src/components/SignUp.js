@@ -1,14 +1,21 @@
 import React, { useState } from 'react';
+import { useMutation } from '@apollo/client';
+import { SIGNUP_USER } from '../graphql/mutations';
 
 const SignUp = ({ onSignUp }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [signUpUser] = useMutation(SIGNUP_USER);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle sign up logic here
-    onSignUp(username);
+    try {
+      const { data } = await signUpUser({ variables: { username, email, password } });
+      onSignUp(data.signUpUser.token);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (

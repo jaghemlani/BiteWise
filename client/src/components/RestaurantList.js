@@ -19,7 +19,6 @@ const RestaurantList = () => {
           </li>
         ))}
       </ul>
-      <p>More Choices Soon!</p>
     </div>
   );
 };
