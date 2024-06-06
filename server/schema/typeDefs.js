@@ -1,25 +1,45 @@
 const typeDefs = `
-  type Tech {
+  type Restaurant {
     _id: ID!
     name: String!
+    avgReview: String
   }
 
-  type Matchup {
+  type Review {
     _id: ID!
-    tech1: String!
-    tech2: String!
-    tech1_votes: Int
-    tech2_votes: Int
+    comment: String!
+    rating: String!
+    userId: ID!
+    restaurantId: ID!
+  }
+
+  type User {
+    _id: ID!
+    username: String!
+    email: String!
+    savedReviews: [ID]!
+  }
+
+  type Auth {
+    token: String!
+    user: User!
+  }
+
+  input ReviewInput {
+    comment: String!
+    rating: String!
+    restaurantId: ID!
   }
 
   type Query {
-    tech: [Tech]
-    matchups(_id: String): [Matchup]
+    me: User
   }
 
   type Mutation {
-    createMatchup(tech1: String!, tech2: String!): Matchup
-    createVote(_id: String!, techNum: Int!): Matchup
+    login(email: String!, password: String!): Auth
+    addUser(username: String!, email: String!, password: String!): Auth
+    saveReview(review: ReviewInput!): User
+    removeReview(reviewId: ID!): User
   }
 `;
 
