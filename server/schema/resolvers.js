@@ -1,20 +1,21 @@
 const { Restaurant, Review, User } = require('../models');
 const bcrypt = require('bcrypt');
-const { generateToken } = require('../auth');
+const jwt = require('jsonwebtoken'); // Import jwt module
+const { AuthenticationError } = require('apollo-server-express'); // Import AuthenticationError from apollo-server-express
 
 const resolvers = {
   Query: {
     async getRestaurant(parent, args, context, info) {
-      const { _id } = args;
-      return await Restaurant.findById(_id);
+      const { id } = args; // Destructure the id from args
+      return await Restaurant.findById(id);
     },
     async getReview(parent, args, context, info) {
-      const { _id } = args;
-      return await Review.findById(_id);
+      const { id } = args; // Destructure the id from args
+      return await Review.findById(id);
     },
     async getUser(parent, args, context, info) {
-      const { _id } = args;
-      return await User.findById(_id);
+      const { id } = args; // Destructure the id from args
+      return await User.findById(id);
     },
   },
   Mutation: {
@@ -33,17 +34,17 @@ const resolvers = {
     async loginUser(parent, args, context, info) {
       const { email, password } = args;
       const user = await User.findOne({ email });
-      if(!user) {
-        throw new Error('Invalid login credentials');
+      if (!user) {
+        throw new AuthenticationError('Invalid login credentials');
       }
-      const correctPassword = await user.isCorrectPassword(password);
-      if(!correctPassword) {
-        throw new Error('Invalid login credentials');
+      const correctPassword = await bcrypt.compare(password, user.password); // Compare hashed password
+      if (!correctPassword) {
+        throw new AuthenticationError('Invalid login credentials');
       }
       const token = jwt.sign({ id: user._id }, 'your-secret-key', { expiresIn: '1h' });
       return { token, user };
     },
-    },
+  },
 };
 
 module.exports = resolvers;
