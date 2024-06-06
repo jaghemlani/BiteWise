@@ -1,6 +1,7 @@
 import React from 'react';
 import RestaurantList from '../RestaurantList';
 
+
 const Home = () => (
   <div>
     <h1>Welcome to BiteWise</h1>
