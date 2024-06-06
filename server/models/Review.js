@@ -7,4 +7,7 @@ const reviewSchema = new Schema({
   restaurant: { type: Schema.Types.ObjectId, ref: 'Restaurant' }
 });
 
-module.exports = mongoose.model('Review', reviewSchema);
+
+const Review = model('Review', reviewSchema);
+
+module.exports = Review;

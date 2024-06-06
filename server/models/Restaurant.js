@@ -6,4 +6,7 @@ const restaurantSchema = new Schema({
   avgReview: String
 });
 
-module.exports = mongoose.model('Restaurant', restaurantSchema);
+
+const Restaurant = model ('Restaurant', restaurantSchema);
+
+module.exports = Restaurant;
