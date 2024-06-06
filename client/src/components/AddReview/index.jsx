@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { ADD_REVIEW } from '../graphql/mutations';
-import { GET_RESTAURANT } from '../graphql/queries';
+import { ADD_REVIEW } from '../../utils//mutations';
+import { GET_RESTAURANT } from '../../utils/queries';
 
 const AddReview = ({ restaurantId }) => {
   const [comment, setComment] = useState('');

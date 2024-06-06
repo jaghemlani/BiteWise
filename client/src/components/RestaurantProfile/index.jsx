@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_RESTAURANT } from '../graphql/queries';
+import { GET_RESTAURANT } from '../../utils/queries';
 import { useParams } from 'react-router-dom';
 import AddReview from './AddReview';
 

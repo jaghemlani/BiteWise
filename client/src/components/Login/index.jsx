@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
-import { SIGNUP_USER } from '../graphql/mutations';
+import { LOGIN_USER } from '../../utils//mutations';
 
-const SignUp = ({ onSignUp }) => {
+const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [signUpUser] = useMutation(SIGNUP_USER);
+  const [loginUser] = useMutation(LOGIN_USER);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await signUpUser({ variables: { username, email, password } });
-      onSignUp(data.signUpUser.token);
+      const { data } = await loginUser({ variables: { username, password } });
+      onLogin(data.loginUser.token);
     } catch (err) {
       console.error(err);
     }
@@ -20,22 +19,18 @@ const SignUp = ({ onSignUp }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>Sign Up</h2>
+      <h2>Login</h2>
       <label>
         Username:
         <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
       </label>
       <label>
-        Email:
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      </label>
-      <label>
         Password:
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       </label>
-      <button type="submit">Sign Up</button>
+      <button type="submit">Login</button>
     </form>
   );
 };
 
-export default SignUp;
+export default Login;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_USER } from '../graphql/queries';
+import { GET_USER } from '../../utils//queries';
 
 const Profile = ({ userId }) => {
   const { loading, error, data } = useQuery(GET_USER, { variables: { id: userId } });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_RESTAURANTS } from '../graphql/queries';
+import { GET_RESTAURANTS } from '../../utils//queries';
 import { Link } from 'react-router-dom';
 
 const RestaurantList = () => {
