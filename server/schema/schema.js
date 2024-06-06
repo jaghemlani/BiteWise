@@ -1,10 +1,13 @@
-const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLList } = require('graphql');
-const mongoose = require('mongoose');
+const { GraphQLObjectType, GraphQLString, GraphQLSchema, GraphQLID, GraphQLList, GraphQLNonNull } = require('graphql');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Review = require('../models/Review');
+const { authenticate, generateToken } = require('../auth');
 
+// Define UserType
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -14,6 +17,7 @@ const UserType = new GraphQLObjectType({
   })
 });
 
+// Define RestaurantType
 const RestaurantType = new GraphQLObjectType({
   name: 'Restaurant',
   fields: () => ({
@@ -29,6 +33,7 @@ const RestaurantType = new GraphQLObjectType({
   })
 });
 
+// Define ReviewType
 const ReviewType = new GraphQLObjectType({
   name: 'Review',
   fields: () => ({
@@ -50,6 +55,7 @@ const ReviewType = new GraphQLObjectType({
   })
 });
 
+// Define RootQuery
 const RootQuery = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
@@ -83,17 +89,19 @@ const RootQuery = new GraphQLObjectType({
   }
 });
 
+// Define Mutations
 const Mutation = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
     addReview: {
       type: ReviewType,
       args: {
-        restaurantId: { type: GraphQLID },
-        comment: { type: GraphQLString },
-        rating: { type: GraphQLString }
+        restaurantId: { type: new GraphQLNonNull(GraphQLID) },
+        comment: { type: new GraphQLNonNull(GraphQLString) },
+        rating: { type: new GraphQLNonNull(GraphQLString) }
       },
       resolve(parent, args, context) {
+        if (!context.user) throw new Error('Unauthorized');
         const review = new Review({
           restaurantId: args.restaurantId,
           comment: args.comment,
@@ -103,11 +111,49 @@ const Mutation = new GraphQLObjectType({
         return review.save();
       }
     },
-    loginUser: {
-      type: UserType,
+    updateReview: {
+      type: ReviewType,
       args: {
-        username: { type: GraphQLString },
-        password: { type: GraphQLString }
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        comment: { type: GraphQLString },
+        rating: { type: GraphQLString }
+      },
+      async resolve(parent, args, context) {
+        if (!context.user) throw new Error('Unauthorized');
+        const review = await Review.findById(args.id);
+        if (review.userId.toString() !== context.user.id) {
+          throw new Error('Unauthorized');
+        }
+        if (args.comment !== undefined) review.comment = args.comment;
+        if (args.rating !== undefined) review.rating = args.rating;
+        return review.save();
+      }
+    },
+    deleteReview: {
+      type: ReviewType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) }
+      },
+      async resolve(parent, args, context) {
+        if (!context.user) throw new Error('Unauthorized');
+        const review = await Review.findById(args.id);
+        if (review.userId.toString() !== context.user.id) {
+          throw new Error('Unauthorized');
+        }
+        return Review.findByIdAndRemove(args.id);
+      }
+    },
+    loginUser: {
+      type: new GraphQLObjectType({
+        name: 'LoginResponse',
+        fields: {
+          token: { type: GraphQLString },
+          user: { type: UserType }
+        }
+      }),
+      args: {
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(parent, args) {
         const user = await User.findOne({ username: args.username });
@@ -119,17 +165,23 @@ const Mutation = new GraphQLObjectType({
           throw new Error('Invalid password');
         }
         return {
-          token: jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET),
+          token: generateToken(user),
           user
         };
       }
     },
     signUpUser: {
-      type: UserType,
+      type: new GraphQLObjectType({
+        name: 'SignUpResponse',
+        fields: {
+          token: { type: GraphQLString },
+          user: { type: UserType }
+        }
+      }),
       args: {
-        username: { type: GraphQLString },
-        email: { type: GraphQLString },
-        password: { type: GraphQLString }
+        username: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        password: { type: new GraphQLNonNull(GraphQLString) }
       },
       async resolve(parent, args) {
         const hashedPassword = await bcrypt.hash(args.password, 12);
@@ -140,7 +192,7 @@ const Mutation = new GraphQLObjectType({
         });
         const newUser = await user.save();
         return {
-          token: jwt.sign({ id: newUser.id, username: newUser.username }, process.env.JWT_SECRET),
+          token: generateToken(newUser),
           user: newUser
         };
       }
