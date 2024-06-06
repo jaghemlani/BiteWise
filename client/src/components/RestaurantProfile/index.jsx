@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_RESTAURANT } from '../../utils/queries';
 import { useParams } from 'react-router-dom';
-import AddReview from './AddReview';
+import AddReview from '../AddReview';
 
 const RestaurantProfile = () => {
   const { id } = useParams();
