@@ -2,8 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const restaurantSchema = new Schema({
-  name: String,
-  avgReview: String
+  name: {
+    type: String,
+    required: true
+  },
+  avgReview: {
+    type: String
+  }
 });
 
 
