@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import RestaurantPage from './pages/RestaurantPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
+import NoMatch from './pages/NoMatch';
 
 const router = createBrowserRouter([
   {
