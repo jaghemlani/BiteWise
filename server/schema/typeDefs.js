@@ -1,4 +1,6 @@
-const typeDefs = `
+const { gql } = require('apollo-server-express');
+
+const typeDefs = gql`
   type Restaurant {
     _id: ID!
     name: String!
@@ -34,7 +36,7 @@ const typeDefs = `
   type Query {
     me: User
     getRestaurant(id: ID!): Restaurant
-    getReview(id: ID!): Review # Define getReview query
+    getReview(id: ID!): Review
     getUser(id: ID!): User
   }
 
