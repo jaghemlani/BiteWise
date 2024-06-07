@@ -6,8 +6,9 @@ const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Review = require('../models/Review');
 const { authenticate, generateToken } = require('../auth');
+const { getGooglePlacesData } = require('../services/googlePlacesService');
 
-// Define UserType
+// Define GraphQL Types
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -17,7 +18,6 @@ const UserType = new GraphQLObjectType({
   })
 });
 
-// Define RestaurantType
 const RestaurantType = new GraphQLObjectType({
   name: 'Restaurant',
   fields: () => ({
@@ -33,7 +33,6 @@ const RestaurantType = new GraphQLObjectType({
   })
 });
 
-// Define ReviewType
 const ReviewType = new GraphQLObjectType({
   name: 'Review',
   fields: () => ({
@@ -52,6 +51,18 @@ const ReviewType = new GraphQLObjectType({
         return Restaurant.findById(parent.restaurantId);
       }
     }
+  })
+});
+
+// Define GooglePlaceType
+const GooglePlaceType = new GraphQLObjectType({
+  name: 'GooglePlace',
+  fields: () => ({
+    place_id: { type: GraphQLString },
+    name: { type: GraphQLString },
+    rating: { type: GraphQLString },
+    user_ratings_total: { type: GraphQLString },
+    formatted_address: { type: GraphQLString },
   })
 });
 
@@ -84,6 +95,16 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(RestaurantType),
       resolve(parent, args) {
         return Restaurant.find({});
+      }
+    },
+    googlePlaces: {
+      type: new GraphQLList(GooglePlaceType),
+      args: {
+        restaurantName: { type: new GraphQLNonNull(GraphQLString) },
+        location: { type: new GraphQLNonNull(GraphQLString) }
+      },
+      resolve(parent, args) {
+        return getGooglePlacesData(args.restaurantName, args.location);
       }
     }
   }
