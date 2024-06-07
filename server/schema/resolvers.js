@@ -15,13 +15,13 @@ const resolvers = {
     },
     async getUser(parent, args, context, info) {
       const { id } = args;
-      return await User.findById(id).populate('savedReviews');
+      return await User.findById(id).populate('savedReviews').populate('writtenReviews');
     },
     async me(parent, args, context, info) {
       if (!context.user) {
         throw new AuthenticationError('You are not authenticated');
       }
-      return await User.findById(context.user._id).populate('savedReviews');
+      return await User.findById(context.user._id).populate('savedReviews').populate('writtenReviews');
     }
   },
   Mutation: {
@@ -33,6 +33,7 @@ const resolvers = {
       const { comment, rating, userId, restaurantId } = args;
       const review = await Review.create({ comment, rating, userId, restaurantId });
       await Restaurant.findByIdAndUpdate(restaurantId, { $push: { reviews: review._id } });
+      await User.findByIdAndUpdate(userId, { $push: { writtenReviews: review._id } });
       return review;
     },
     async createUser(parent, args, context, info) {
@@ -57,11 +58,12 @@ const resolvers = {
       if (!context.user) {
         throw new AuthenticationError('You need to be logged in!');
       }
+      const reviewObj = await Review.findById(review);
       const updatedUser = await User.findByIdAndUpdate(
         context.user._id,
-        { $addToSet: { savedReviews: review } },
+        { $addToSet: { savedReviews: reviewObj._id } },
         { new: true, runValidators: true }
-      );
+      ).populate('savedReviews').populate('writtenReviews');
       return updatedUser;
     },
     async removeReview(parent, { reviewId }, context, info) {
@@ -72,7 +74,7 @@ const resolvers = {
         context.user._id,
         { $pull: { savedReviews: reviewId } },
         { new: true }
-      );
+      ).populate('savedReviews').populate('writtenReviews');
       return updatedUser;
     }
   }

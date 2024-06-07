@@ -4,22 +4,27 @@ const typeDefs = gql`
   type Restaurant {
     _id: ID!
     name: String!
-    avgReview: String
+    address: String!
+    cuisine: String!
+    avgReview: Float
+    reviews: [Review]!
   }
 
   type Review {
     _id: ID!
     comment: String!
-    rating: String!
-    userId: ID!
-    restaurantId: ID!
+    rating: Int!
+    userId: User!
+    restaurantId: Restaurant!
   }
 
   type User {
     _id: ID!
     username: String!
     email: String!
-    savedReviews: [ID]!
+    password: String!
+    savedReviews: [Review]!
+    writtenReviews: [Review]!
   }
 
   type Auth {
@@ -29,7 +34,7 @@ const typeDefs = gql`
 
   input ReviewInput {
     comment: String!
-    rating: String!
+    rating: Int!
     restaurantId: ID!
   }
 
@@ -41,9 +46,9 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    createRestaurant(name: String!, avgReview: String): Restaurant
-    createReview(comment: String!, rating: String!, userId: ID!, restaurantId: ID!): Review
-    createUser(username: String!, email: String!, password: String!, savedReviews: [ID]!): User
+    createRestaurant(name: String!, address: String!, cuisine: String!): Restaurant
+    createReview(comment: String!, rating: Int!, userId: ID!, restaurantId: ID!): Review
+    createUser(username: String!, email: String!, password: String!): User
     loginUser(email: String!, password: String!): Auth
     saveReview(review: ReviewInput!): User
     removeReview(reviewId: ID!): User
