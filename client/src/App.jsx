@@ -7,6 +7,7 @@ import {
   createHttpLink,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { ChakraProvider } from '@chakra-ui/react'
 
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage'; // Make sure this import is correct
@@ -47,15 +48,17 @@ function App() {
   };
 
   return (
-    <ApolloProvider client={client}>
-      <Routes>
-        <Route exact path='/' element={<HomePage />} />
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-        <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />} />
-        <Route path="/profile" element={<ProfilePage user={user} />} />
-        <Route path="/restaurant/:id" element={<RestaurantPage />} />
-      </Routes>
-    </ApolloProvider>
+    <ChakraProvider>
+      <ApolloProvider client={client}>
+        <Routes>
+          <Route exact path='/' element={<HomePage />} />
+          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />} />
+          <Route path="/profile" element={<ProfilePage user={user} />} />
+          <Route path="/restaurant/:id" element={<RestaurantPage />} />
+        </Routes>
+      </ApolloProvider>
+    </ChakraProvider>
   );
 }
 

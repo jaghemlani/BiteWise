@@ -1,40 +1,55 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button, Container, Menu } from 'semantic-ui-react'
+import { Box, Flex, Text } from '@chakra-ui/react';
 
 const Header = ({ username }) => (
-  <Menu fixed="top" size="huge">
-    <header>
-      <div className="logo">
-        <h1 className="ui center aligned header">
-          BiteWise
-        </h1>
-      </div>
-      <nav>
-        <Container>
-          <Menu.Item>
-            <Button as={Link} to="/" style={{ fontSize: "1.5rem" }}>
-              Home
-            </Button>
-            {username ? (
-              <Link to="/profile">{username}</Link>
-            ) : (
-              <>
-                <Button as={Link} to="/login" style={{ fontSize: "1.5rem" }}>
-                  Log in
-                </Button>
-                {/*           <Link to="/login">Login</Link> */}
-                <Button as={Link} to="/SignUp" style={{ fontSize: "1.5rem" }}>
-                  Sign Up
-                </Button>
-                {/*           <Link to="/signup">Sign Up</Link> */}
-              </>
-            )}
-          </Menu.Item>
-        </Container>
-      </nav>
-    </header>
-  </Menu>
+  <Box
+    display="flex"
+    alignItems="center"
+    justifyContent="space-between">
+
+    <Flex
+      flex={{ base: 1, md: 0 }}
+      justify={'flex-center'}
+      direction={'row'}
+      spacing={8}>
+
+      <Text
+        textAlign={'center'}
+        fontFamily={'heading'}
+        color={'black'}>
+        BiteWise
+      </Text>
+
+
+
+    </Flex>
+
+    <Flex
+      flex={{ base: 1, md: 0 }}
+      justify={'flex-end'}
+      direction={'row'}
+      spacing={6}>
+
+      <Link as={Link} to="/" >
+        Home
+      </Link>
+      {username ? (
+        <Link to="/profile">{username}</Link>
+      ) : (
+        <>
+          <Link as={Link} to="/login" >
+            Log in
+          </Link>
+          {/*           <Link to="/login">Login</Link> */}
+          <Link as={Link} to="/SignUp">
+            Sign Up
+          </Link>
+          {/*           <Link to="/signup">Sign Up</Link> */}
+        </>
+      )}
+    </Flex>
+  </Box>
 );
 
 export default Header;
