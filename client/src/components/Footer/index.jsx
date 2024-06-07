@@ -1,10 +1,15 @@
 import React from 'react';
+import { Text, VStack } from '@chakra-ui/react';
 
 const Footer = () => (
-  <footer>
-    <p>&copy; 2024 BiteWise. All rights reserved.</p>
-    <p>Team GitHub, Date</p>
-  </footer>
+  <React.Fragment>
+    <VStack
+      borderTop="1px" borderColor="gray.400"
+      w="100%" bg="gray.100">
+      <Text>2024 BiteWise. All rights reserved.</Text>
+      <Text>Team GitHub, Date</Text>
+    </VStack>
+  </React.Fragment>
 );
 
 export default Footer;
