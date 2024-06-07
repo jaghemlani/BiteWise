@@ -6,9 +6,8 @@ const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Review = require('../models/Review');
 const { authenticate, generateToken } = require('../auth');
-const { getGooglePlacesData } = require('../services/googlePlacesService');
 
-// Define GraphQL Types
+// Define UserType
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({
@@ -18,6 +17,7 @@ const UserType = new GraphQLObjectType({
   })
 });
 
+// Define RestaurantType
 const RestaurantType = new GraphQLObjectType({
   name: 'Restaurant',
   fields: () => ({
@@ -33,6 +33,7 @@ const RestaurantType = new GraphQLObjectType({
   })
 });
 
+// Define ReviewType
 const ReviewType = new GraphQLObjectType({
   name: 'Review',
   fields: () => ({
@@ -51,18 +52,6 @@ const ReviewType = new GraphQLObjectType({
         return Restaurant.findById(parent.restaurantId);
       }
     }
-  })
-});
-
-// Define GooglePlaceType
-const GooglePlaceType = new GraphQLObjectType({
-  name: 'GooglePlace',
-  fields: () => ({
-    place_id: { type: GraphQLString },
-    name: { type: GraphQLString },
-    rating: { type: GraphQLString },
-    user_ratings_total: { type: GraphQLString },
-    formatted_address: { type: GraphQLString },
   })
 });
 
@@ -95,16 +84,6 @@ const RootQuery = new GraphQLObjectType({
       type: new GraphQLList(RestaurantType),
       resolve(parent, args) {
         return Restaurant.find({});
-      }
-    },
-    googlePlaces: {
-      type: new GraphQLList(GooglePlaceType),
-      args: {
-        restaurantName: { type: new GraphQLNonNull(GraphQLString) },
-        location: { type: new GraphQLNonNull(GraphQLString) }
-      },
-      resolve(parent, args) {
-        return getGooglePlacesData(args.restaurantName, args.location);
       }
     }
   }
@@ -225,3 +204,65 @@ module.exports = new GraphQLSchema({
   query: RootQuery,
   mutation: Mutation
 });
+
+const GOOGLE_PLACES_QUERY = gql`
+  query GooglePlaces($restaurantName: String!, $location: String!) {
+    googlePlaces(restaurantName: $restaurantName, location: $location) {
+      place_id
+      name
+      rating
+      user_ratings_total
+      formatted_address
+    }
+  }
+`;
+
+const GooglePlaces = () => {
+  const [restaurantName, setRestaurantName] = useState('');
+  const [location, setLocation] = useState('');
+  const [searchPlaces, { loading, data }] = useLazyQuery(GOOGLE_PLACES_QUERY);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    searchPlaces({ variables: { restaurantName, location } });
+  };
+
+  return (
+    <div>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group>
+          <Form.Label>Restaurant Name</Form.Label>
+          <Form.Control
+            type="text"
+            value={restaurantName}
+            onChange={(e) => setRestaurantName(e.target.value)}
+          />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Location</Form.Label>
+          <Form.Control
+            type="text"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </Form.Group>
+        <Button type="submit">Search</Button>
+      </Form>
+      {loading && <p>Loading...</p>}
+      {data && (
+        <ListGroup>
+          {data.googlePlaces.map((place) => (
+            <ListGroup.Item key={place.place_id}>
+              <h5>{place.name}</h5>
+              <p>Rating: {place.rating}</p>
+              <p>User Ratings: {place.user_ratings_total}</p>
+              <p>Address: {place.formatted_address}</p>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      )}
+    </div>
+  );
+};
+
+export default GooglePlaces;
