@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+const { Schema, model } = require('mongoose');
 
 const restaurantSchema = new Schema({
   name: {
@@ -16,10 +15,12 @@ const restaurantSchema = new Schema({
   },
   reviews: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: 'Review',
     }
   ],
 });
 
-module.exports = mongoose.model('Restaurant', restaurantSchema);
+const Restaurant = model('Restaurant', restaurantSchema);
+
+model.exports = Restaurant;
