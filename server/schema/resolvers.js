@@ -9,7 +9,7 @@ const resolvers = {
     //   const { id } = args;
     //   return await Restaurant.findById(id).populate('reviews');
     // },
-    restaurant: async () => {
+    restaurants: async () => {
       return await Restaurant.find({}).populate('reviews');
     },
     // async getReview(parent, args, context, info) {
@@ -19,7 +19,7 @@ const resolvers = {
     reviews: async () => {
       return await Review.find({});
     },
-    user: async () => {
+    users: async () => {
       return await User.find({});
     },
     async getUser(parent, args, context, info) {

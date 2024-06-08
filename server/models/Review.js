@@ -7,22 +7,19 @@ const reviewSchema = new Schema({
   },
   rating: {
     type: Number,
-    required: true
+    required: true,
+    min: 1,
+    max: 5,
   },
-  username: [
-    {
-      type: Schema.Types.ObjectId,
+  userId: {
+      type: String,
       ref: 'User',
       required: true
-    }
-  ],
-  restaurantId: [
-    {
-      type: Schema.Types.ObjectId,
+  },
+  restaurantId: {
+    type: String,
     ref: 'Restaurant',
-    required: true
-    }
-  ]
+  }
 });
 
 const Review = model('Review', reviewSchema);

@@ -12,7 +12,7 @@ const restaurantSchema = new Schema({
   cuisine: {
     type: String,
     required: true,
-  },
+  }, 
   reviews: [
     {
       type: Schema.Types.ObjectId,

@@ -1,40 +1,40 @@
 {
   "users": [
     {
-      "username": "john_doe",
+      "username": "johnDoe",
       "email": "john@example.com",
-      "password": "hashedpassword"
+      "password": "password123"
     },
     {
-      "username": "jane_doe",
+      "username": "janeDoe",
       "email": "jane@example.com",
-      "password": "hashedpassword"
+      "password": "password456"
     }
   ],
   "restaurants": [
     {
-      "name": "Pizza Place",
-      "address": "123 Main St",
-      "cuisine": "Italian"
+      "name": "Italian Bistro",
+      "cuisine": "Italian",
+      "address": "123 Main St"
     },
     {
-      "name": "Sushi Spot",
-      "address": "456 Elm St",
-      "cuisine": "Japanese"
+      "name": "Sushi Place",
+      "cuisine": "Japanese",
+      "address": "456 Elm St"
     }
   ],
   "reviews": [
     {
-      "restaurantId": "Pizza Place",
-      "userId": "john_doe",
+      "comment": "Great food!",
       "rating": 5,
-      "comment": "Great place!"
+      "userId": "johnDoe",
+      "restaurantId": "Italian Bistro"
     },
     {
-      "restaurantId": "Sushi Spot",
-      "userId": "jane_doe",
-      "rating": 4,
-      "comment": "Good sushi!"
+      "comment": "Not bad, could be better.",
+      "rating": 3,
+      "userId": "janeDoe",
+      "restaurantId": "Sushi Place"
     }
   ]
 }

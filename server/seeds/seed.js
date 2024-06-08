@@ -40,6 +40,14 @@ db.once('open', async () => {
     const reviews = data.reviews.map(review => {
       const user = users.find(user => user.username === review.userId);
       const restaurant = restaurants.find(restaurant => restaurant.name === review.restaurantId);
+
+      if (!user) {
+        throw new Error(`User not found: ${review.userId}`);
+      }
+      if (!restaurant) {
+        throw new Error(`Restaurant not found: ${review.restaurantId}`);
+      }
+
       return {
         ...review,
         author: user._id,
