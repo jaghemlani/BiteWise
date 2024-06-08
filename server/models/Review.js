@@ -9,16 +9,20 @@ const reviewSchema = new Schema({
     type: Number,
     required: true
   },
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  restaurantId: {
-    type: Schema.Types.ObjectId,
+  username: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
+    }
+  ],
+  restaurantId: [
+    {
+      type: Schema.Types.ObjectId,
     ref: 'Restaurant',
     required: true
-  }
+    }
+  ]
 });
 
 const Review = model('Review', reviewSchema);

@@ -1,22 +1,40 @@
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+// const db = require('../config/connection');
+
+// module.exports = async (modelName, collectionName) => {
+//   try {
+//     const connection = mongoose.connection;
+//     const collections = await connection.db.listCollections({ name: collectionName }).toArray();
+
+//     if (collections.length) {
+//       await connection.db.dropCollection(collectionName);
+//     }
+//   } catch (err) {
+//     if (err.codeName === 'NamespaceNotFound') {
+//       console.log(`Collection ${collectionName} does not exist, skipping drop.`);
+//     } else {
+//       throw err;
+//     }
+//   }
+// };
+
+const models = require('../models');
 const db = require('../config/connection');
 
 module.exports = async (modelName, collectionName) => {
   try {
-    const connection = mongoose.connection;
-    const collections = await connection.db.listCollections({ name: collectionName }).toArray();
+    let modelExists = await models[modelName].db.db.listCollections({
+      name: collectionName
+    }).toArray()
 
-    if (collections.length) {
-      await connection.db.dropCollection(collectionName);
+    if (modelExists.length) {
+      await db.dropCollection(collectionName);
     }
   } catch (err) {
-    if (err.codeName === 'NamespaceNotFound') {
-      console.log(`Collection ${collectionName} does not exist, skipping drop.`);
-    } else {
-      throw err;
-    }
+    throw err;
   }
-};
+}
+
 
 // Usage example
 // (async () => {

@@ -19,6 +19,12 @@ const userSchema = new Schema(
       required: true,
       minlength: 5,
     },
+    createdReviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Review',
+      }
+    ],
     savedReviews: [
       {
         type: Schema.Types.ObjectId,

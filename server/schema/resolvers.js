@@ -5,13 +5,22 @@ const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
   Query: {
-    async getRestaurant(parent, args, context, info) {
-      const { id } = args;
-      return await Restaurant.findById(id).populate('reviews');
+    // async getRestaurant(parent, args, context, info) {
+    //   const { id } = args;
+    //   return await Restaurant.findById(id).populate('reviews');
+    // },
+    restaurant: async () => {
+      return await Restaurant.find({}).populate('reviews');
     },
-    async getReview(parent, args, context, info) {
-      const { id } = args;
-      return await Review.findById(id).populate('userId').populate('restaurantId');
+    // async getReview(parent, args, context, info) {
+    //   const { id } = args;
+    //   return await Review.findById(id).populate('userId').populate('restaurantId');
+    // },
+    reviews: async () => {
+      return await Review.find({});
+    },
+    user: async () => {
+      return await User.find({});
     },
     async getUser(parent, args, context, info) {
       const { id } = args;

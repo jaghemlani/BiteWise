@@ -1,13 +1,11 @@
-const { gql } = require('apollo-server-express');
-
-const typeDefs = gql`
+const typeDefs = `
   type Restaurant {
     _id: ID!
     name: String!
     address: String!
     cuisine: String!
     avgReview: Float
-    reviews: [Review]!
+    reviews: [Review]
   }
 
   type Review {
@@ -40,7 +38,9 @@ const typeDefs = gql`
 
   type Query {
     me: User
-    getRestaurant(id: ID!): Restaurant
+    reviews: [Review]
+    users: [User]
+    restaurants: [Restaurant]
     getReview(id: ID!): Review
     getUser(id: ID!): User
   }
