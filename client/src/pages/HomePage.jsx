@@ -6,9 +6,10 @@ import { VStack } from '@chakra-ui/react';
 
 const HomePage = ({ username }) => (
   <React.Fragment>
+    
+    <Header username={username} />
 
     <VStack h='calc(100vh)' bg="orange.100">
-      <Header username={username} />
       <Home />
     </VStack>
 
