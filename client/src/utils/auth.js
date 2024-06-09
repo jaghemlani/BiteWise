@@ -1,29 +1,23 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const User = require('./models/User');
+const User = require('./models/User'); // Adjust the path if necessary
+
+const authenticate = (req, res, next) => {
+  const token = req.headers['authorization'];
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ message: 'Invalid token' });
+      }
+      req.user = decoded;
+      next();
+    });
+  } else {
+    next();
+  }
+};
 
 const generateToken = (user) => {
   return jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
 };
 
-const login = async (username, password) => {
-  const user = await User.findOne({ username });
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new Error('Invalid credentials');
-  }
-
-  return generateToken(user);
-};
-
-const signUp = async (username, email, password) => {
-  const user = new User({ username, email, password: await bcrypt.hash(password, 12) });
-  await user.save();
-  return generateToken(user);
-};
-
-module.exports = { login, signUp };
+module.exports = { authenticate, generateToken };

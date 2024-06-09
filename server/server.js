@@ -1,34 +1,51 @@
 const express = require('express');
-const { ApolloServer } = require('@apollo/server');
-const { expressMiddleware } = require('@apollo/server/express4');
+const { ApolloServer } = require('apollo-server-express');
 const path = require('path');
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+dotenv.config();
 
 const { typeDefs, resolvers } = require('./schema');
 const db = require('./config/connection');
 
+const { authenticate } = require('./auth');
+
 const PORT = process.env.PORT || 3001;
 const app = express();
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: ({ req }) => {
+    const token = req.headers.authorization || '';
+    if (token) {
+      try {
+        const user = jwt.verify(token, process.env.JWT_SECRET);
+        return { user };
+      } catch (err) {
+        console.warn('Invalid token');
+      }
+    }
+    return {};
+  },
 });
 
 const startApolloServer = async () => {
   await server.start();
-  
+
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  
-  app.use('/graphql', expressMiddleware(server));
+  app.use('/graphql', server.getMiddleware({ path: '/' }));
 
-  // if we're in production, serve client/dist as static assets
+  // Serve static assets in production
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
 
     app.get('*', (req, res) => {
       res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
-  } 
+  }
 
   db.once('open', () => {
     app.listen(PORT, () => {

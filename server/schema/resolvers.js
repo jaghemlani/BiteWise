@@ -9,7 +9,7 @@ const resolvers = {
       if (!context.user) {
         throw new AuthenticationError('You are not authenticated');
       }
-      return User.findById(context.user._id).populate('savedReviews').populate('writtenReviews');
+      return User.findById(context.user.id).populate('savedReviews').populate('writtenReviews');
     },
     reviews: async () => {
       return Review.find().populate('userId').populate('restaurantId');
@@ -44,32 +44,62 @@ const resolvers = {
       return newReview.populate('userId').populate('restaurantId').execPopulate();
     },
     createUser: async (parent, { username, email, password }) => {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      return User.create({ username, email, password: hashedPassword });
+      try {
+        const user = await User.create({ username, email, password });
+        console.log('User created:', user); // Debug log
+        return user;
+      } catch (error) {
+        console.error('Error creating user:', error); // Debug log
+        throw new Error('Error creating user');
+      }
     },
     loginUser: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
-      if (!user) {
+      try {
+        const user = await User.findOne({ email });
+        console.log('User found:', user); // Debug log
+
+        if (!user) {
+          console.error('User not found');
+          throw new AuthenticationError('Invalid login credentials');
+        }
+
+        console.log('Plaintext password:', password); // Debug log
+        console.log('Stored hashed password:', user.password); // Debug log
+
+        const correctPassword = await bcrypt.compare(password, user.password);
+        console.log('Password match:', correctPassword); // Debug log
+
+        if (!correctPassword) {
+          console.error('Password does not match');
+          throw new AuthenticationError('Invalid login credentials');
+        }
+
+        const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        return { token, user };
+      } catch (error) {
+        console.error('Error logging in user:', error); // Debug log
         throw new AuthenticationError('Invalid login credentials');
       }
-      const correctPassword = await bcrypt.compare(password, user.password);
-      if (!correctPassword) {
-        throw new AuthenticationError('Invalid login credentials');
+    },
+    saveReview: async (parent, { review }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You are not authenticated');
       }
-      const token = jwt.sign({ id: user._id }, 'your-secret-key', { expiresIn: '1h' });
-      return { token, user };
+      const newReview = await Review.create({ ...review, userId: context.user.id });
+      await User.findByIdAndUpdate(context.user.id, { $push: { savedReviews: newReview._id } });
+      await Restaurant.findByIdAndUpdate(review.restaurantId, { $push: { reviews: newReview._id } });
+      return User.findById(context.user.id).populate('savedReviews');
     },
-    saveReview: async (parent, { review }) => {
-      const newReview = await Review.create(review);
-      await User.findByIdAndUpdate(review.userId, { $push: { savedReviews: newReview._id } });
-      return User.findById(review.userId).populate('savedReviews');
-    },
-    removeReview: async (parent, { reviewId }) => {
+    removeReview: async (parent, { reviewId }, context) => {
+      if (!context.user) {
+        throw new AuthenticationError('You are not authenticated');
+      }
       const review = await Review.findByIdAndDelete(reviewId);
       if (!review) {
         throw new Error('Review not found');
       }
       await User.findByIdAndUpdate(review.userId, { $pull: { savedReviews: reviewId } });
+      await Restaurant.findByIdAndUpdate(review.restaurantId, { $pull: { reviews: reviewId } });
       return User.findById(review.userId).populate('savedReviews');
     },
   },
