@@ -1,57 +1,53 @@
-const { Restaurant, Review, User } = require('../models');
+const { User, Restaurant, Review } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { AuthenticationError } = require('apollo-server-express');
 
 const resolvers = {
   Query: {
-    // async getRestaurant(parent, args, context, info) {
-    //   const { id } = args;
-    //   return await Restaurant.findById(id).populate('reviews');
-    // },
-    restaurants: async () => {
-      return await Restaurant.find({}).populate('reviews');
-    },
-    // async getReview(parent, args, context, info) {
-    //   const { id } = args;
-    //   return await Review.findById(id).populate('userId').populate('restaurantId');
-    // },
-    reviews: async () => {
-      return await Review.find({});
-    },
-    users: async () => {
-      return await User.find({});
-    },
-    async getUser(parent, args, context, info) {
-      const { id } = args;
-      return await User.findById(id).populate('savedReviews').populate('writtenReviews');
-    },
-    async me(parent, args, context, info) {
+    me: async (parent, args, context) => {
       if (!context.user) {
         throw new AuthenticationError('You are not authenticated');
       }
-      return await User.findById(context.user._id).populate('savedReviews').populate('writtenReviews');
-    }
+      return User.findById(context.user._id).populate('savedReviews').populate('writtenReviews');
+    },
+    reviews: async () => {
+      return Review.find().populate('userId').populate('restaurantId');
+    },
+    users: async () => {
+      return User.find().populate('savedReviews').populate('writtenReviews');
+    },
+    restaurants: async () => {
+      return Restaurant.find().populate({
+        path: 'reviews',
+        populate: {
+          path: 'userId',
+          model: 'User'
+        }
+      });
+    },
+    getReview: async (parent, { id }) => {
+      return Review.findById(id).populate('userId').populate('restaurantId');
+    },
+    getUser: async (parent, { id }) => {
+      return User.findById(id).populate('savedReviews').populate('writtenReviews');
+    },
   },
   Mutation: {
-    async createRestaurant(parent, args, context, info) {
-      const { name, address, cuisine } = args;
-      return await Restaurant.create({ name, address, cuisine });
+    createRestaurant: async (parent, { name, address, cuisine }) => {
+      return Restaurant.create({ name, address, cuisine });
     },
-    async createReview(parent, args, context, info) {
-      const { comment, rating, userId, restaurantId } = args;
-      const review = await Review.create({ comment, rating, userId, restaurantId });
-      await Restaurant.findByIdAndUpdate(restaurantId, { $push: { reviews: review._id } });
-      await User.findByIdAndUpdate(userId, { $push: { writtenReviews: review._id } });
-      return review;
+    createReview: async (parent, { comment, rating, userId, restaurantId }) => {
+      const newReview = await Review.create({ comment, rating, userId, restaurantId });
+      await User.findByIdAndUpdate(userId, { $push: { writtenReviews: newReview._id } });
+      await Restaurant.findByIdAndUpdate(restaurantId, { $push: { reviews: newReview._id } });
+      return newReview.populate('userId').populate('restaurantId').execPopulate();
     },
-    async createUser(parent, args, context, info) {
-      const { username, email, password } = args;
+    createUser: async (parent, { username, email, password }) => {
       const hashedPassword = await bcrypt.hash(password, 10);
-      return await User.create({ username, email, password: hashedPassword });
+      return User.create({ username, email, password: hashedPassword });
     },
-    async loginUser(parent, args, context, info) {
-      const { email, password } = args;
+    loginUser: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
       if (!user) {
         throw new AuthenticationError('Invalid login credentials');
@@ -63,30 +59,20 @@ const resolvers = {
       const token = jwt.sign({ id: user._id }, 'your-secret-key', { expiresIn: '1h' });
       return { token, user };
     },
-    async saveReview(parent, { review }, context, info) {
-      if (!context.user) {
-        throw new AuthenticationError('You need to be logged in!');
-      }
-      const reviewObj = await Review.findById(review);
-      const updatedUser = await User.findByIdAndUpdate(
-        context.user._id,
-        { $addToSet: { savedReviews: reviewObj._id } },
-        { new: true, runValidators: true }
-      ).populate('savedReviews').populate('writtenReviews');
-      return updatedUser;
+    saveReview: async (parent, { review }) => {
+      const newReview = await Review.create(review);
+      await User.findByIdAndUpdate(review.userId, { $push: { savedReviews: newReview._id } });
+      return User.findById(review.userId).populate('savedReviews');
     },
-    async removeReview(parent, { reviewId }, context, info) {
-      if (!context.user) {
-        throw new AuthenticationError('You need to be logged in!');
+    removeReview: async (parent, { reviewId }) => {
+      const review = await Review.findByIdAndDelete(reviewId);
+      if (!review) {
+        throw new Error('Review not found');
       }
-      const updatedUser = await User.findByIdAndUpdate(
-        context.user._id,
-        { $pull: { savedReviews: reviewId } },
-        { new: true }
-      ).populate('savedReviews').populate('writtenReviews');
-      return updatedUser;
-    }
-  }
+      await User.findByIdAndUpdate(review.userId, { $pull: { savedReviews: reviewId } });
+      return User.findById(review.userId).populate('savedReviews');
+    },
+  },
 };
 
 module.exports = resolvers;

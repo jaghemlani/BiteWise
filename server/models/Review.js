@@ -12,13 +12,14 @@ const reviewSchema = new Schema({
     max: 5,
   },
   userId: {
-      type: String,
-      ref: 'User',
-      required: true
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
   restaurantId: {
-    type: String,
+    type: Schema.Types.ObjectId,
     ref: 'Restaurant',
+    required: true,
   }
 });
 
