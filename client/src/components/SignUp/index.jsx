@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../../utils/mutations';
 
+
+
 const SignUp = ({ onSignUp }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
