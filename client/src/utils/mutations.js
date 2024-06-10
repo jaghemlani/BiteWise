@@ -11,17 +11,17 @@ export const ADD_REVIEW = gql`
 `;
 
 export const LOGIN_USER = gql`
-  mutation loginUser($username: String!, $password: String!) {
-    loginUser(username: $username, password: $password) {
+  mutation login($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
       token
-      user {
-        id
-        username
-        email
+      profile {
+        _id
+        name
       }
     }
   }
 `;
+
 
 export const SIGNUP_USER = gql`
   mutation signUpUser($username: String!, $email: String!, $password: String!) {

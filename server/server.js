@@ -2,36 +2,16 @@ const express = require('express');
 const { ApolloServer } = require('@apollo/server');
 const { expressMiddleware } = require('@apollo/server/express4');
 const path = require('path');
-// const dotenv = require('dotenv');
-// dotenv.config();
-
 const { authMiddleware } = require('./auth');
-
-
-// Load environment variables from .env file
 
 const { typeDefs, resolvers } = require('./schema');
 const db = require('./config/connection');
 
-
 const PORT = process.env.PORT || 3001;
 const app = express();
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => {
-    const token = req.headers.authorization || '';
-    if (token) {
-      try {
-        const user = jwt.verify(token, process.env.JWT_SECRET);
-        return { user };
-      } catch (err) {
-        console.warn('Invalid token');
-      }
-    }
-    return {};
-  },
 });
 
 const startApolloServer = async () => {

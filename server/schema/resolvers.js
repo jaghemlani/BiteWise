@@ -1,15 +1,13 @@
 const { User, Restaurant, Review } = require('../models');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { AuthenticationError } = require('apollo-server-express');
-const { signToken } = require('../auth');
+const { signToken, AuthenticationError } = require('../auth');
 
 
 const resolvers = {
   Query: {
     me: async (parent, args, context) => {
       if (!context.user) {
-        throw new AuthenticationError('You are not authenticated');
+        throw AuthenticationError;
       }
       return User.findById(context.user.id).populate('savedReviews').populate('writtenReviews');
     },
@@ -47,9 +45,9 @@ const resolvers = {
     },
     createUser: async (parent, { username, email, password }) => {
       try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await User.create({ username, email, password: hashedPassword });
+        const user = await User.create({ username, email, password });
         const token = signToken(user);
+        console.log("login successful");
         return { token, user };
       } catch (error) {
         console.error('Error creating user:', error); // Log the actual error
@@ -58,16 +56,20 @@ const resolvers = {
     },
     loginUser: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
+
       if (!user) {
-        throw new AuthenticationError('Invalid login credentials');
+        throw AuthenticationError;
       }
 
-      const correctPassword = await bcrypt.compare(password, user.password);
+      const correctPassword = await user.isCorrectPassword(password);
+
       if (!correctPassword) {
-        throw new AuthenticationError('Invalid login credentials');
+        throw AuthenticationError;
       }
 
-      const token = jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = signToken(user);
+
+
       return { token, user };
     },
   },
