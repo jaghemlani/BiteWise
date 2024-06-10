@@ -34,7 +34,7 @@ const Header = ({ username }) => (
 const LoginLink = () => (
   <Box w="100%" h="100%" bg="pink" rounded="md">
     <Center h="100%">
-      <Link as={Link} to="/login">
+      <Link as={Link} to="/LoginPage">
         Log in
       </Link>
     </Center>
@@ -44,7 +44,7 @@ const LoginLink = () => (
 const SignUpLink = () => (
   <Box w="100%" h="100%" bg="pink" rounded="md">
     <Center h="100%">
-      <Link as={Link} to="/SignUp">
+      <Link as={Link} to="/SignUpPage">
         Sign Up
       </Link>
     </Center>

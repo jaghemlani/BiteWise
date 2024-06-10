@@ -2,19 +2,17 @@ import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../../utils/mutations';
 
-import Auth from '../../utils/auth'
-
 const SignUp = ({ onSignUp }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [signUpUser] = useMutation(SIGNUP_USER);
+  const [signUpUser, { error }] = useMutation(SIGNUP_USER);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const { data } = await signUpUser({ variables: { username, email, password } });
-      onSignUp(data.signUpUser.token);
+      onSignUp(data.createUser.token);
     } catch (err) {
       console.error(err);
     }
@@ -36,6 +34,7 @@ const SignUp = ({ onSignUp }) => {
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       </label>
       <button type="submit">Sign Up</button>
+      {error && <p>Error signing up. Please try again.</p>}
     </form>
   );
 };

@@ -52,8 +52,8 @@ function App() {
       <ApolloProvider client={client}>
         <Routes>
           <Route exact path='/' element={<HomePage />} />
-          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-          <Route path="/signup" element={<SignUpPage onSignUp={handleSignUp} />} />
+          <Route path="/LoginPage" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="/SignUpPage" element={<SignUpPage onSignUp={handleSignUp} />} />
           <Route path="/profile" element={<ProfilePage user={user} />} />
           <Route path="/restaurant/:id" element={<RestaurantPage />} />
         </Routes>
