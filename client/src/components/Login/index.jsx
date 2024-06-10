@@ -23,13 +23,13 @@ const Login = ({ onLogin }) => {
       <Center alignItem="center">Login</Center>
       <Text>
         Username:
-        <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <Input bg="white" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
       </Text>
       <Text>
         Password:
-        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Input bg="white" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
       </Text>
-      <Button type="submit">Login</Button>
+      <Button mt={2} type="submit">Login</Button>
     </Box>
   );
 };

@@ -8,17 +8,17 @@ const Header = ({ username }) => {
     Auth.logout();
   };
   return (
-  <VStack borderBottom="1px" borderColor="gray.300" w="100%" h="100px" bg="gray.200">
+  <VStack borderBottom="1px" borderColor="red.300" w="100%" h="100px" bg="yellow.100">
     <Box w="400px" h="100%" bg="pink" rounded="md">
       <Center h="100%">BiteWise</Center>
     </Box>
     <HStack w="100%" h="100%" p="1">
       <Spacer />
       <Grid templateColumns="repeat(3, 1fr)" gap={1}>
-        <Box w="70%" h="100%" bg="pink" rounded="md">
-          <Center h="100%">
+        <Box w="70%" h="100%">
+          <Button bg="pink" h="100%">
             <Link to="/">Home</Link>
-          </Center>
+          </Button >
         </Box>
         {username ? (
           <>
@@ -40,22 +40,22 @@ const Header = ({ username }) => {
 };
 
 const LoginLink = () => (
-  <Box w="100%" h="100%" bg="pink" rounded="md">
-    <Center h="100%">
+  <Box w="100%" h="100%">
+    <Button bg="pink" h="100%">
       <Link as={Link} to="/LoginPage">
         Log in
       </Link>
-    </Center>
+    </Button >
   </Box>
 );
 
 const SignUpLink = () => (
-  <Box w="100%" h="100%" bg="pink" rounded="md">
-    <Center h="100%">
+  <Box w="100%" h="100%">
+    <Button bg="pink" h="100%">
       <Link as={Link} to="/SignUpPage">
         Sign Up
       </Link>
-    </Center>
+    </Button >
   </Box>
 );
 

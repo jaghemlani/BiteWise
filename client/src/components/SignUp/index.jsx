@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { SIGNUP_USER } from '../../utils/mutations';
+import { Box, Text, Button, Input, Center } from '@chakra-ui/react'; 
 
 const SignUp = ({ onSignUp }) => {
   const [username, setUsername] = useState('');
@@ -19,23 +20,23 @@ const SignUp = ({ onSignUp }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Sign Up</h2>
-      <label>
+    <Box onSubmit={handleSubmit}>
+      <Center>Sign Up</Center>
+      <Text>
         Username:
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-      </label>
-      <label>
+        <Input bg="white" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+      </Text>
+      <Text>
         Email:
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-      </label>
-      <label>
+        <Input bg="white" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+      </Text>
+      <Text>
         Password:
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </label>
-      <button type="submit">Sign Up</button>
+        <Input bg="white" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </Text>
+      <Button mt={2} type="submit">Sign Up</Button>
       {error && <p>Error signing up. Please try again.</p>}
-    </form>
+    </Box>
   );
 };
 
