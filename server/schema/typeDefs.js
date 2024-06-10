@@ -1,4 +1,6 @@
-const typeDefs = `
+const { gql } = require('apollo-server-express');
+
+const typeDefs = gql`
   type Restaurant {
     _id: ID!
     name: String!
@@ -48,7 +50,7 @@ const typeDefs = `
   type Mutation {
     createRestaurant(name: String!, address: String!, cuisine: String!): Restaurant
     createReview(comment: String!, rating: Int!, userId: ID!, restaurantId: ID!): Review
-    createUser(username: String!, email: String!, password: String!): User
+    createUser(username: String!, email: String!, password: String!): Auth
     loginUser(email: String!, password: String!): Auth
     saveReview(review: ReviewInput!): User
     removeReview(reviewId: ID!): User

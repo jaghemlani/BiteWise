@@ -1,15 +1,18 @@
 const express = require('express');
-const { ApolloServer } = require('apollo-server-express');
+const { ApolloServer } = require('@apollo/server');
+const { expressMiddleware } = require('@apollo/server/express4');
 const path = require('path');
-const dotenv = require('dotenv');
+// const dotenv = require('dotenv');
+// dotenv.config();
+
+const { authMiddleware } = require('./auth');
+
 
 // Load environment variables from .env file
-dotenv.config();
 
 const { typeDefs, resolvers } = require('./schema');
 const db = require('./config/connection');
 
-const { authenticate } = require('./auth');
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -36,8 +39,9 @@ const startApolloServer = async () => {
 
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  app.use('/graphql', server.getMiddleware({ path: '/' }));
-
+  app.use('/graphql', expressMiddleware(server, {
+    context: authMiddleware
+  }));
   // Serve static assets in production
   if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
