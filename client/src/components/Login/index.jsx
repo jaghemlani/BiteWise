@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { LOGIN_USER } from '../../utils//mutations';
+import { Form, FormLabel, Button, Input, Center } from '@chakra-ui/react'; 
 
 const Login = ({ onLogin }) => {
   const [username, setUsername] = useState('');
@@ -18,18 +19,18 @@ const Login = ({ onLogin }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Login</h2>
-      <label>
+    <Form onSubmit={handleSubmit}>
+      <Center alignItem="center">Login</Center>
+      <FormLabel>
         Username:
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-      </label>
-      <label>
+        <Input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
+      </FormLabel>
+      <FormLabel>
         Password:
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </label>
-      <button type="submit">Login</button>
-    </form>
+        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+      </FormLabel>
+      <Button type="submit">Login</Button>
+    </Form>
   );
 };
 
