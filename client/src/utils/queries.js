@@ -31,6 +31,7 @@ export const GET_USER = gql`
       id
       username
       email
+      
     }
   }
 `;

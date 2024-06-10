@@ -24,7 +24,7 @@ const typeDefs = gql`
     email: String!
     password: String!
     savedReviews: [Review]!
-    writtenReviews: [Review]!
+    createdReviews: [Review]!
   }
 
   type Auth {
