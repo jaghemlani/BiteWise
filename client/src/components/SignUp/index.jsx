@@ -21,7 +21,7 @@ const SignUp = ({ onSignUp }) => {
 
   return (
     <Box onSubmit={handleSubmit}>
-      <Center>Sign Up</Center>
+      <Center as='u' fontSize={20} alignItem="center">Sign Up</Center>
       <Text>
         Username:
         <Input bg="white" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />

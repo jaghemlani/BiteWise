@@ -20,7 +20,7 @@ const Login = ({ onLogin }) => {
 
   return (
     <Box onSubmit={handleSubmit}>
-      <Center alignItem="center">Login</Center>
+      <Center as='u' fontSize={20} alignItem="center">Login</Center>
       <Text>
         Username:
         <Input bg="white" type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
