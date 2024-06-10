@@ -1,23 +1,36 @@
-const jwt = require('jsonwebtoken');
-const User = require('./models/User'); // Adjust the path if necessary
+// use this to decode a token and get the user's information out of it
+import decode from 'jwt-decode';
 
-const authenticate = (req, res, next) => {
-  const token = req.headers['authorization'];
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        return res.status(401).json({ message: 'Invalid token' });
-      }
-      req.user = decoded;
-      next();
-    });
-  } else {
-    next();
+// create a new class to instantiate for a user
+class AuthService {
+  // get user data from JSON web token by decoding it
+  getProfile() {
+    return decode(this.getToken());
   }
-};
 
-const generateToken = (user) => {
-  return jwt.sign({ id: user._id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-};
+  // return `true` or `false` if token exists (does not verify if it's expired yet)
+  loggedIn() {
+    const token = this.getToken();
+    return token ? true : false;
+  }
 
-module.exports = { authenticate, generateToken };
+  getToken() {
+    // Retrieves the user token from localStorage
+    return localStorage.getItem('id_token');
+  }
+
+  login(idToken) {
+    // Saves user token to localStorage and reloads the application for logged in status to take effect
+    localStorage.setItem('id_token', idToken);
+    window.location.assign('/');
+  }
+
+  logout() {
+    // Clear user token and profile data from localStorage
+    localStorage.removeItem('id_token');
+    // this will reload the page and reset the state of the application
+    window.location.reload();
+  }
+}
+
+export default new AuthService();
