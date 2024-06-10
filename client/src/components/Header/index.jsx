@@ -1,8 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Box, VStack, Center, HStack, Spacer, Grid } from '@chakra-ui/react';
+import { Box, VStack, Center, HStack, Spacer, Grid, Button } from '@chakra-ui/react';
 
-const Header = ({ username }) => (
+const Header = ({ username }) => {
+  const logout = (event) => {
+    event.preventDefault();
+    Auth.logout();
+  };
+  return (
   <VStack borderBottom="1px" borderColor="gray.300" w="100%" h="100px" bg="gray.200">
     <Box w="400px" h="100%" bg="pink" rounded="md">
       <Center h="100%">BiteWise</Center>
@@ -18,7 +23,9 @@ const Header = ({ username }) => (
         {username ? (
           <>
             <Link to="/profile">{username}</Link>
-            <LogoutLink />
+            <Button onClick={logout}>
+              Logout
+            </Button>
           </>
         ) : (
           <>
@@ -29,7 +36,8 @@ const Header = ({ username }) => (
       </Grid>
     </HStack>
   </VStack>
-);
+  );
+};
 
 const LoginLink = () => (
   <Box w="100%" h="100%" bg="pink" rounded="md">
@@ -46,16 +54,6 @@ const SignUpLink = () => (
     <Center h="100%">
       <Link as={Link} to="/SignUpPage">
         Sign Up
-      </Link>
-    </Center>
-  </Box>
-);
-
-const LogoutLink = () => (
-  <Box w="100%" h="100%" bg="pink" rounded="md">
-    <Center h="100%">
-      <Link as={Link} to="/logout">
-        Log out
       </Link>
     </Center>
   </Box>
