@@ -1,6 +1,6 @@
 import React from 'react';
 import RestaurantList from '../RestaurantList';
-import { Box, Text, Center } from '@chakra-ui/react'; 
+import { Box, Text, Center, Image } from '@chakra-ui/react';
 
 const Home = () => (
   <Box>
@@ -8,6 +8,7 @@ const Home = () => (
     <Text mt={2} >Our Mission: To ensure great food, generous portions, and reasonable prices.</Text>
     <Box mt={8}>
       <RestaurantList />
+      <Image src="/images/ifihadone.jpg" alt="if-i-had-one-image" />
     </Box>
   </Box>
 );
